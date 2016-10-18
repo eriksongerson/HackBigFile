@@ -7,7 +7,7 @@
 void FileName(char *path);
 int OpenFile();
 int CloseFile();
-int CleanBuffer();
+//int CleanBuffer();			//когда эта функция будет нужна - сообщить(нет).
 
 FILE *pMySpFile;
 int Checking;
@@ -15,7 +15,6 @@ char *FullPathFile;
 
 void FileName(char *path) {
 	FullPathFile = path;
-	OpenFile();
 }
 
 int OpenFile() {

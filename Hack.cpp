@@ -1,5 +1,5 @@
 // Hack.cpp : Defines the entry point for the console application.
-//
+//Чёрт. Это дерьмо никогда не заработает.
 
 #include "stdafx.h"
 #include "Secondary.h"
@@ -16,13 +16,21 @@ void PrintLaws();
 void PrintHelp();
 
 /*Функция, считающая строки (нет).*/
-//int Counting(int);
+int Counting();
 
 /*Функции, которые считают и выводят (нет) почтовые сервисы*/
 int SearchEmails();
 void BustEmail();
 void InsertEmailMap();
 void PrintEmails();
+void PrintCurrentEmail();
+
+/*Функции, которые ищут одинаковые пароли.*/
+void SearchSamePasses();
+void PrintSamePasses();
+int BustSamePasses();
+void InsertPassMap();
+void PrintCurrentPass();
 
 /*Функции, которые считают количество аккаунтов, имеющих второй пароль*/
 void FindSecondPass();
@@ -49,6 +57,7 @@ const char sp[]{ "-sp" };						//1
 char *path;
 char *pEmail;
 char *pBuf;
+char *pPass;
 
 unsigned long int WorkForCount = 0; //здесь храним количество строк
 
@@ -64,7 +73,9 @@ bool WorkInput = false; //если true - файл подключен
 bool WorkOutput = false;
 
 map <string, int> MapEmails;
+map <string, int> MapPasses;
 map <string, int>::iterator cur;
+map <string, int>::iterator current;
 
 int main(int argc, char *argv[])
 {
@@ -89,8 +100,9 @@ int main(int argc, char *argv[])
 			}
 			else if (strcmp(pArg, c) == 0 || strcmp(pArg, linecount) == 0) {
 				if (WorkForCount == 0) {
-					WorkForCount = Counter();
+					WorkForCount = Counting();
 				}
+				CloseFile();
 				printf("%d", WorkForCount);
 				WBUF;
 			}
@@ -98,8 +110,21 @@ int main(int argc, char *argv[])
 				SearchEmails(); 
 				PrintEmails();
 				WBUF;
+				MapEmails.clear();
+				CloseFile();
 			}
-			else if (strcmp(pArg, secondPass) == 0 || strcmp(pArg, sp) == 0) { FindSecondPass(); WBUF;}
+			else if (strcmp(pArg, s) == 0 || strcmp(pArg, same) == 0) {
+				SearchSamePasses();
+				PrintSamePasses();
+				WBUF;
+				MapPasses.clear();
+				CloseFile();
+			}
+			else if (strcmp(pArg, secondPass) == 0 || strcmp(pArg, sp) == 0) { 
+				FindSecondPass(); 
+				WBUF; 
+				CloseFile(); 
+			}
 		}
 		CloseFile();
 	}
@@ -116,40 +141,48 @@ void PrintHelp() {
 	printf("logins Myspace.com site, which had previously been procured in a text file.\n\n");
 	printf("Use:\thackBigFile [options]\n\n");
 	printf("-f[path]\t--file[path]\tOpen a file. Required argument.\n");
-	printf("-o[path]\t--output[path]\tThe output of information received in the specified file.\n\t\t\t\tPriority argument. It means\n");
+//	printf("-o[path]\t--output[path]\tThe output of information received in the specified file.\n\t\t\t\tPriority argument. It means\n");
 	printf("-c\t\t--count\t\tCounting the number of records\n");
 	printf("-e\t\t\t\tSearch, counting, displaying the number of the same e - mail services\n");
-	printf("-h\t\t--hash\t\tConclusion password hash\n");
-	printf("-u\t\t\t\tPassword Decryption\n");
+//	printf("-h\t\t--hash\t\tConclusion password hash\n");
+//	printf("-u\t\t\t\tPassword Decryption\n");
 	printf("-s\t\t--same\t\tSearch and counting identical passwords\n");
+	printf("-sp\t\t--spass\t\tSearch and display the number of accounts with a second password");
 	printf("-?\t\t--help\t\tDisplay information about using the program\n");
 	exit(1);
 }
 
-/*Ниже представленная функция рабочая, но я отказался от неё из-за религиозных причин.
-Рабочая версия другой считающей функции лежит в Counting.h. Почему? Потому что так сложилось исторически. 
-И вообще Windows, мягко говоря - г****. Линукс лучше тем, что там есть командочка wc. 
-WC - 2 буквы и никаких проблем.*/
-
-/*int Counting(int A) {
+/*Ниже представленная функция работает.
+Здесь закоментирована первая версия функции, но я отказался от неё из-за религиозных причин.
+Рабочая версия другой считающей функции лежит в Counting.h. Почему? Потому что так сложилось исторически.*/
+int Counting() {
+	OpenFile();
+	unsigned long int lineCounter = 0;
+	while (fgets(Buf, sizeof(Buf), pMySpFile)) {
+		lineCounter++;
+		//printf("%s", Buf);
+		/*if (lineCounter % 1000000 == 0) {
+			printf("%d\n", (int)lineCounter);
+		}*/
+	}
+	//lineCounter--;//Моя версия файла багованая, поэтому я убираю багованую строку
+	CloseFile();
+	return lineCounter;
+	//printf("%d", lineCounter);
+}
+/*
 OpenFile();
-
 if (A == 0) {
 printf("\nCounting lines ... \n");
 }
-
 unsigned long int j = 0;
-
 do
 {
 Checking = fscanf(pMySpFile, "%s", Buf);
 j++;
 } while (Checking != EOF);
-
 j--;	//потому что цикл "проходит" лишний круг
-
 WorkForCount = j;
-
 if (A == 0) {
 CloseFile();
 }
@@ -158,12 +191,13 @@ return j;
 
 int SearchEmails() {
 	if (WorkForCount == 0) {
-		WorkForCount = Counter(); //Считаем количество строк и используем их в цикле.
+		WorkForCount = Counting(); //Считаем количество строк и используем их в цикле.
 	}
+	OpenFile();
 	int Del = 0;
 	int A = 0;
 	for (int i = 0; i < WorkForCount;i++) {
-		int Checker = fscanf(pMySpFile, "%s", Buf);
+		fscanf(pMySpFile, "%s", Buf);
 		WBUF;
 		for (int j = 0; j < strlen(Buf);j++) {
 			int Write = 0;
@@ -181,6 +215,7 @@ int SearchEmails() {
 	endCycle:
 		pBuf++;
 	}
+	CloseFile();
 	return 1;
 }
 
@@ -208,16 +243,31 @@ void InsertEmailMap() {
 }
 
 void PrintEmails() {
+	int max = 0;
+	string MaxKey;
+	int lastmaxkey = 100000000;
+	for (int i = 0; i < 25; i++) {
 		for (cur = MapEmails.begin();cur != MapEmails.end();cur++)
 		{
-			cout << (*cur).first << ": " << (*cur).second << endl;
+			if ((*cur).second > max && max < lastmaxkey) { max = (*cur).second; MaxKey = (*cur).first; }
 		}
+		for (cur = MapEmails.begin();cur != MapEmails.end(); cur++) {
+			lastmaxkey = max;
+			current = MapEmails.find(MaxKey);
+			PrintCurrentEmail();
+		}
+	}
+}
+
+void PrintCurrentEmail() {
+	cout << "\t" << (*current).first << ": " << (*current).second << endl;
 }
 
 void FindSecondPass() {
 	if (WorkForCount == 0) {
-		WorkForCount = Counter();
+		WorkForCount = Counting();
 	}
+	OpenFile();
 	for (int i = 0; i < WorkForCount; i++) {
 		fscanf(pMySpFile, "%s", Buf);
 		WBUF;
@@ -244,4 +294,77 @@ int BustSecPass() {
 	}
 end:
 	return 0;
+}
+
+void SearchSamePasses() {
+	if (WorkForCount == 0) {
+		WorkForCount = Counting(); //Считаем количество строк и используем их в цикле.
+	}
+	OpenFile();
+	for (int i = 0;i < WorkForCount;i++) {
+		fprintf(pMySpFile, "%s", Buf);
+		WBUF;
+		BustSamePasses();
+	}
+}
+
+void PrintSamePasses() {
+	int max = 0;
+	string MaxKey;
+	int lastmaxkey = 100000000;
+	for (int i = 0; i < 25; i++) {
+		for (cur = MapPasses.begin();cur != MapPasses.end();cur++)
+		{
+			if ((*cur).second > max && max < lastmaxkey) { max = (*cur).second; MaxKey = (*cur).first; }
+		}
+		for (cur = MapPasses.begin();cur != MapPasses.end(); cur++) {
+			lastmaxkey = max;
+			current = MapPasses.find(MaxKey);
+			PrintCurrentPass();
+		}
+	}
+}
+
+void PrintCurrentPass() {
+	cout << "\t" << (*current).first << ": " << (*current).second << endl;
+}
+
+int BustSamePasses() {
+	int k = 0;
+	int j = 0;
+	for (j; j < strlen(Buf); j++) {
+		if (*pBuf == ':') {
+			k++;
+		}
+		if (k == 3 && *(pBuf + 1) != '\'' && *(pBuf + 2) != '\'') {
+			pPass = pBuf;
+			int l = 0;	//Счётчик нужен для возврата строки, содержащей пароль в изначальное положение.
+			for (int i = 0; i < strlen(pEmail); i++) {
+				if (*pPass == ':') {
+					*pPass = '\0';
+					break;
+				}
+				l++;
+				pPass++;
+			}
+			pPass -= l;
+			InsertPassMap();
+			goto end;
+		}
+		if (k == 3 && *(pBuf + 1) == '\'' && *(pBuf + 2) == '\'') {
+			goto end;
+		}
+		pBuf++;
+	}
+end:
+	return 0;
+}
+
+void InsertPassMap() {
+	if (MapPasses.count(pPass) == 0) {
+		MapPasses.insert(pair<char*, int>(pPass, 1));
+	}
+	else {
+		MapPasses[pPass]++;
+	}
 }
