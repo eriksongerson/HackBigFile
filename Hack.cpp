@@ -1,9 +1,9 @@
-// Hack.cpp : Defines the entry point for the console application.
+//Hack.cpp : Defines the entry point for the console application.
 //Чёрт. Это дерьмо никогда не заработает.
 
 #include "stdafx.h"
 #include "Secondary.h"
-#include "Counting.h"
+//#include "Counting.h"
 #include <string.h>
 #include <map>
 #include <iostream>
@@ -41,10 +41,10 @@ const char f[]{ "-f" };							//1
 const char file[]{ "--file" };					//1
 const char help[]{ "--help" };					//1
 const char q[]{ "-?" };							//1
-const char e[]{ "-e" };							//0
+const char e[]{ "-e" };							//1
 const char h[]{ "--hash" };						//0
-const char s[]{ "-s" };							//0
-const char same[]{ "--same" };					//0
+const char s[]{ "-s" };							//1
+const char same[]{ "--same" };					//1
 const char o[]{ "-o" };							//0
 const char output[]{ "--output" };				//0
 const char c[]{ "-c" };							//1.r
@@ -59,7 +59,7 @@ char *pEmail;
 char *pBuf;
 char *pPass;
 
-unsigned long int WorkForCount = 0; //здесь храним количество строк
+unsigned long int WorkForCount = 1000; //здесь храним количество строк
 
 int WorkForSecPass = 0;
 
@@ -103,11 +103,12 @@ int main(int argc, char *argv[])
 					WorkForCount = Counting();
 				}
 				CloseFile();
-				printf("%d", WorkForCount);
+				printf("\nThe number of entries in the file: %d\n", WorkForCount);
 				WBUF;
 			}
 			else if (strcmp(pArg, e) == 0) {
 				SearchEmails(); 
+				printf("\nE-Mail : Number\n");
 				PrintEmails();
 				WBUF;
 				MapEmails.clear();
@@ -115,6 +116,7 @@ int main(int argc, char *argv[])
 			}
 			else if (strcmp(pArg, s) == 0 || strcmp(pArg, same) == 0) {
 				SearchSamePasses();
+				printf("\nPassword: Number\n");
 				PrintSamePasses();
 				WBUF;
 				MapPasses.clear();
@@ -251,11 +253,12 @@ void PrintEmails() {
 		{
 			if ((*cur).second > max && max < lastmaxkey) { max = (*cur).second; MaxKey = (*cur).first; }
 		}
-		for (cur = MapEmails.begin();cur != MapEmails.end(); cur++) {
+		//for (cur = MapEmails.begin();cur != MapEmails.end(); cur++) {
 			lastmaxkey = max;
+			max = 0;
 			current = MapEmails.find(MaxKey);
 			PrintCurrentEmail();
-		}
+		//}
 	}
 }
 
@@ -302,7 +305,6 @@ void SearchSamePasses() {
 	}
 	OpenFile();
 	for (int i = 0;i < WorkForCount;i++) {
-		fprintf(pMySpFile, "%s", Buf);
 		WBUF;
 		BustSamePasses();
 	}
@@ -311,17 +313,19 @@ void SearchSamePasses() {
 void PrintSamePasses() {
 	int max = 0;
 	string MaxKey;
+	int i = 0;
 	int lastmaxkey = 100000000;
-	for (int i = 0; i < 25; i++) {
+	for (i; i < 25; i++) {
 		for (cur = MapPasses.begin();cur != MapPasses.end();cur++)
 		{
 			if ((*cur).second > max && max < lastmaxkey) { max = (*cur).second; MaxKey = (*cur).first; }
 		}
 		for (cur = MapPasses.begin();cur != MapPasses.end(); cur++) {
 			lastmaxkey = max;
+			max = 0;
 			current = MapPasses.find(MaxKey);
-			PrintCurrentPass();
 		}
+		PrintCurrentPass();
 	}
 }
 
@@ -332,14 +336,16 @@ void PrintCurrentPass() {
 int BustSamePasses() {
 	int k = 0;
 	int j = 0;
+	fscanf(pMySpFile, "%s", pBuf);
 	for (j; j < strlen(Buf); j++) {
 		if (*pBuf == ':') {
 			k++;
 		}
+		if (*pBuf == ':' && k == 3) { pBuf++; }
 		if (k == 3 && *(pBuf + 1) != '\'' && *(pBuf + 2) != '\'') {
 			pPass = pBuf;
 			int l = 0;	//Счётчик нужен для возврата строки, содержащей пароль в изначальное положение.
-			for (int i = 0; i < strlen(pEmail); i++) {
+			for (int i = 0; i < 42; i++) {
 				if (*pPass == ':') {
 					*pPass = '\0';
 					break;
@@ -357,6 +363,7 @@ int BustSamePasses() {
 		pBuf++;
 	}
 end:
+	pPass = pBuf;
 	return 0;
 }
 
