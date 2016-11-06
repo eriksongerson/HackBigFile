@@ -9,36 +9,36 @@
 
 using namespace std;
 
-/*Функции для того, чтобы забрать имя файла, открыть его и закрыть, а также переоткрыть файл. 
-Переоткрывать файл нужно для того, чтобы функция fscanf читала записи с первой строки.
-Немного радикально.*/
+/*Г”ГіГ­ГЄГ¶ГЁГЁ Г¤Г«Гї ГІГ®ГЈГ®, Г·ГІГ®ГЎГ» Г§Г ГЎГ°Г ГІГј ГЁГ¬Гї ГґГ Г©Г«Г , Г®ГІГЄГ°Г»ГІГј ГҐГЈГ® ГЁ Г§Г ГЄГ°Г»ГІГј, Г  ГІГ ГЄГ¦ГҐ ГЇГҐГ°ГҐГ®ГІГЄГ°Г»ГІГј ГґГ Г©Г«. 
+ГЏГҐГ°ГҐГ®ГІГЄГ°Г»ГўГ ГІГј ГґГ Г©Г« Г­ГіГ¦Г­Г® Г¤Г«Гї ГІГ®ГЈГ®, Г·ГІГ®ГЎГ» ГґГіГ­ГЄГ¶ГЁГї fscanf Г·ГЁГІГ Г«Г  Г§Г ГЇГЁГ±ГЁ Г± ГЇГҐГ°ГўГ®Г© Г±ГІГ°Г®ГЄГЁ.
+ГЌГҐГ¬Г­Г®ГЈГ® Г°Г Г¤ГЁГЄГ Г«ГјГ­Г®.*/
 void FileName();
 int OpenFile();
 int CloseFile();
 void ReOpenFile();
 
-/*Функции, выводящие сообщение о help'е, и, собстна, help*/
+/*Г”ГіГ­ГЄГ¶ГЁГЁ, ГўГ»ГўГ®Г¤ГїГ№ГЁГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ Г® help'ГҐ, ГЁ, Г±Г®ГЎГ±ГІГ­Г , help*/
 void PrintLaws();
 void PrintHelp();
 
-/*Функция, считающая строки (нет).*/
+/*Г”ГіГ­ГЄГ¶ГЁГї, Г±Г·ГЁГІГ ГѕГ№Г Гї Г±ГІГ°Г®ГЄГЁ (Г­ГҐГІ).*/
 int Counting();
 
-/*Функции, которые считают и выводят (нет) почтовые сервисы*/
+/*Г”ГіГ­ГЄГ¶ГЁГЁ, ГЄГ®ГІГ®Г°Г»ГҐ Г±Г·ГЁГІГ ГѕГІ ГЁ ГўГ»ГўГ®Г¤ГїГІ (Г­ГҐГІ) ГЇГ®Г·ГІГ®ГўГ»ГҐ Г±ГҐГ°ГўГЁГ±Г»*/
 int SearchEmails();
 void BustEmail();
 void InsertEmailMap();
 void PrintEmails();
 void PrintCurrentEmail();
 
-/*Функции, которые ищут одинаковые пароли.*/
+/*Г”ГіГ­ГЄГ¶ГЁГЁ, ГЄГ®ГІГ®Г°Г»ГҐ ГЁГ№ГіГІ Г®Г¤ГЁГ­Г ГЄГ®ГўГ»ГҐ ГЇГ Г°Г®Г«ГЁ.*/
 void SearchSamePasses();
 void PrintSamePasses();
 int BustSamePasses();
 int InsertPassMap();
 void PrintCurrentPass();
 
-/*Функции, которые считают количество аккаунтов, имеющих второй пароль*/
+/*Г”ГіГ­ГЄГ¶ГЁГЁ, ГЄГ®ГІГ®Г°Г»ГҐ Г±Г·ГЁГІГ ГѕГІ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® Г ГЄГЄГ ГіГ­ГІГ®Гў, ГЁГ¬ГҐГѕГ№ГЁГµ ГўГІГ®Г°Г®Г© ГЇГ Г°Г®Г«Гј*/
 void FindSecondPass();
 int BustSecPass();
 
@@ -58,7 +58,7 @@ const char linecount[]{ "--count" };			//1
 const char secondPass[]{ "--spass" };			//1
 const char sp[]{ "-sp" };						//1
 
-/*Итого: 8 функций. Необходимо некоторые переписать. Для таких функций ставлю в комментарий букву 'r'*/
+/*Г€ГІГ®ГЈГ®: 8 ГґГіГ­ГЄГ¶ГЁГ©. ГЌГҐГ®ГЎГµГ®Г¤ГЁГ¬Г® Г­ГҐГЄГ®ГІГ®Г°Г»ГҐ ГЇГҐГ°ГҐГЇГЁГ±Г ГІГј. Г„Г«Гї ГІГ ГЄГЁГµ ГґГіГ­ГЄГ¶ГЁГ© Г±ГІГ ГўГ«Гѕ Гў ГЄГ®Г¬Г¬ГҐГ­ГІГ Г°ГЁГ© ГЎГіГЄГўГі 'r'*/
 
 FILE *pMySpFile;
 
@@ -68,7 +68,7 @@ char *pBuf;
 char *pPass;
 char *FullPathFile;
 
-unsigned long int WorkForCount = 0; //здесь храним количество строк
+unsigned long int WorkForCount = 0; //Г§Г¤ГҐГ±Гј ГµГ°Г Г­ГЁГ¬ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® Г±ГІГ°Г®ГЄ
 
 int WorkForSecPass = 0;
 
@@ -76,9 +76,9 @@ char Buf[10000];
 
 #define WBUF pBuf = &Buf[0];
 
-/*в начале программы надо узнать путь входного файлика*/
-bool WorkInput = false; //если true - файл подключен
-						/*а если есть выходной - то ещё и выходного*/
+/*Гў Г­Г Г·Г Г«ГҐ ГЇГ°Г®ГЈГ°Г Г¬Г¬Г» Г­Г Г¤Г® ГіГ§Г­Г ГІГј ГЇГіГІГј ГўГµГ®Г¤Г­Г®ГЈГ® ГґГ Г©Г«ГЁГЄГ */
+bool WorkInput = false; //ГҐГ±Г«ГЁ true - ГґГ Г©Г« ГЇГ®Г¤ГЄГ«ГѕГ·ГҐГ­
+						/*Г  ГҐГ±Г«ГЁ ГҐГ±ГІГј ГўГ»ГµГ®Г¤Г­Г®Г© - ГІГ® ГҐГ№Вё ГЁ ГўГ»ГµГ®Г¤Г­Г®ГЈГ®*/
 //bool WorkOutput = false;
 
 map <string, int> MapEmails;
@@ -86,7 +86,7 @@ map <string, int> MapPasses;
 map <string, int>::iterator cur;
 map <string, int>::iterator current;
 
-/*Вторичные функции сделаю здесь. Они будут мешать.*/
+/*Г‚ГІГ®Г°ГЁГ·Г­Г»ГҐ ГґГіГ­ГЄГ¶ГЁГЁ Г±Г¤ГҐГ«Г Гѕ Г§Г¤ГҐГ±Гј. ГЋГ­ГЁ ГЎГіГ¤ГіГІ Г¬ГҐГёГ ГІГј.*/
 void FileName() {
 	FullPathFile = path;
 	//OpenFile();
@@ -110,13 +110,14 @@ void ReOpenFile() {
 	CloseFile();
 	OpenFile();
 }
-/*Конец вторичных функций*/
+/*ГЉГ®Г­ГҐГ¶ ГўГІГ®Г°ГЁГ·Г­Г»Гµ ГґГіГ­ГЄГ¶ГЁГ©*/
 
 int main(int argc, char *argv[])
 {
 	if (argc < 2) PrintLaws();
 	else {
 		for (int i = 1; i < argc; i++) {
+				#pragma loop(hint_parallel(0))
 			pArg = argv[i];
 			if (strcmp(pArg, q) == 0 || strcmp(pArg, help) == 0) {
 				PrintHelp();
@@ -193,6 +194,7 @@ int Counting() {
 	if (pMySpFile == NULL) { OpenFile(); }
 	unsigned long int lineCounter = 0;
 	while (fgets(Buf, sizeof(Buf), pMySpFile)) {
+			#pragma loop(hint_parallel(0))
 		lineCounter++;
 		//printf("%s", Buf);
 		/*if (lineCounter % 1000000 == 0) {
@@ -204,13 +206,14 @@ int Counting() {
 
 int SearchEmails() {
 	if (WorkForCount == 0) {
-		WorkForCount = Counting(); //Считаем количество строк и используем их в цикле.
+		WorkForCount = Counting(); //Г‘Г·ГЁГІГ ГҐГ¬ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® Г±ГІГ°Г®ГЄ ГЁ ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГ¬ ГЁГµ Гў Г¶ГЁГЄГ«ГҐ.
 	}
 	if (pMySpFile != NULL) { ReOpenFile(); }
 	if (pMySpFile == NULL) { OpenFile(); }
 	int Del = 0;
 	int A = 0;
 	for (int i = 0; i < WorkForCount;i++) {
+			#pragma loop(hint_parallel(0))
 		fscanf(pMySpFile, "%s", Buf);
 		WBUF;
 		for (int j = 0; j < strlen(Buf);j++) {
@@ -235,7 +238,7 @@ int SearchEmails() {
 
 void BustEmail() {
 	int Del = 0;
-	int l = 0;	//Счётчик нужен для возврата строки, содержащей e-mail в изначальное положение.
+	int l = 0;	//Г‘Г·ВёГІГ·ГЁГЄ Г­ГіГ¦ГҐГ­ Г¤Г«Гї ГўГ®Г§ГўГ°Г ГІГ  Г±ГІГ°Г®ГЄГЁ, Г±Г®Г¤ГҐГ°Г¦Г Г№ГҐГ© e-mail Гў ГЁГ§Г­Г Г·Г Г«ГјГ­Г®ГҐ ГЇГ®Г«Г®Г¦ГҐГ­ГЁГҐ.
 	for (int i = 0; i < strlen(pEmail); i++) {
 		if (*pEmail == ':') {
 			*pEmail = '\0';
@@ -262,7 +265,8 @@ void PrintEmails() {
 	int lastmaxkey = 100000000;
 	for (int i = 0; i < 25; i++) {
 		for (cur = MapEmails.begin();cur != MapEmails.end();cur++)
-		{
+		{	#pragma loop(hint_parallel(0))
+			
 			if (lastmaxkey != max && lastmaxkey > max && lastmaxkey > (*cur).second && (*cur).second > max) { 
 				max = (*cur).second; MaxKey = (*cur).first; 
 			}
@@ -288,6 +292,7 @@ void FindSecondPass() {
 	if (pMySpFile != NULL) { ReOpenFile(); }
 	if (pMySpFile == NULL) { OpenFile(); }
 	for (int i = 0; i < WorkForCount; i++) {
+			#pragma loop(hint_parallel(0))
 		fscanf(pMySpFile, "%s", Buf);
 		WBUF;
 		BustSecPass();
@@ -317,11 +322,12 @@ end:
 
 void SearchSamePasses() {
 	if (WorkForCount == 0) {
-		WorkForCount = Counting(); //Считаем количество строк и используем их в цикле.
+		WorkForCount = Counting(); //Г‘Г·ГЁГІГ ГҐГ¬ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® Г±ГІГ°Г®ГЄ ГЁ ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГ¬ ГЁГµ Гў Г¶ГЁГЄГ«ГҐ.
 	}
 	if (pMySpFile != NULL) { ReOpenFile(); }
 	if (pMySpFile == NULL) { OpenFile(); }
 	for (int i = 0;i < WorkForCount;i++) {
+			#pragma loop(hint_parallel(0))
 		WBUF;
 		BustSamePasses();
 	}
@@ -334,6 +340,7 @@ void PrintSamePasses() {
 	for (int i = 0; i < 25; i++) {
 		for (cur = MapPasses.begin(); cur != MapPasses.end(); cur++)
 		{
+				#pragma loop(hint_parallel(0))
 			if (lastmaxkey != max && lastmaxkey > max && lastmaxkey > (*cur).second && (*cur).second > max) {
 				max = (*cur).second; MaxKey = (*cur).first; 
 			}
@@ -364,7 +371,7 @@ int BustSamePasses() {
 		}
 		if (k == 3 && *(pBuf + 1) != '\'' && *(pBuf + 2) != '\'') {
 			pPass = pBuf;
-			int l = 0;//Счётчик нужен для возврата строки, содержащей пароль в изначальное положение.
+			int l = 0;//Г‘Г·ВёГІГ·ГЁГЄ Г­ГіГ¦ГҐГ­ Г¤Г«Гї ГўГ®Г§ГўГ°Г ГІГ  Г±ГІГ°Г®ГЄГЁ, Г±Г®Г¤ГҐГ°Г¦Г Г№ГҐГ© ГЇГ Г°Г®Г«Гј Гў ГЁГ§Г­Г Г·Г Г«ГјГ­Г®ГҐ ГЇГ®Г«Г®Г¦ГҐГ­ГЁГҐ.
 			int t = strlen(pPass);
 			for (int i = 0; i < t; i++) {
 				if (*pPass == ':') {
